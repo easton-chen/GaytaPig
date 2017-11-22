@@ -2,7 +2,9 @@
 #define CACHE_CACHE_H_
 
 #include <stdint.h>
+#include <math.h>
 #include "storage.h"
+#include "def.h"
 
 typedef struct CacheConfig_ {
   int size;
@@ -10,16 +12,19 @@ typedef struct CacheConfig_ {
   int set_num; // Number of cache sets
   int write_through; // 0|1 for back|through
   int write_allocate; // 0|1 for no-alc|alc
+  int block_size;
 } CacheConfig;
 
 class Cache: public Storage {
  public:
+  cache_set *sets;
+
   Cache() {}
   ~Cache() {}
 
   // Sets & Gets
   void SetConfig(CacheConfig cc);
-  void GetConfig(CacheConfig cc);
+  void GetConfig(CacheConfig &cc);
   void SetLower(Storage *ll) { lower_ = ll; }
   // Main access process
   void HandleRequest(uint64_t addr, int bytes, int read,
@@ -31,11 +36,14 @@ class Cache: public Storage {
   // Partitioning
   void PartitionAlgorithm();
   // Replacement
-  int ReplaceDecision();
-  void ReplaceAlgorithm();
+  int ReplaceDecision(uint64_t addr);
+  void ReplaceAlgorithm(uint64_t addr, int read, int &time);
   // Prefetching
   int PrefetchDecision();
   void PrefetchAlgorithm();
+
+  //adding function
+  void set_dirty(uint64_t addr);
 
   CacheConfig config_;
   Storage *lower_;

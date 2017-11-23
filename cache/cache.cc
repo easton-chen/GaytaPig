@@ -93,7 +93,7 @@ int Cache::ReplaceDecision(uint64_t addr) {
 void Cache::ReplaceAlgorithm(uint64_t addr, int read, int &time) {
   CacheConfig cc;
   GetConfig(cc);
-  //only if wirte and wirte non-allocate is there no replacement
+  //only if write and wirte non-allocate is there no replacement
   if(read == 0 && cc.write_allocate == 0)
     return;
 

@@ -23,22 +23,20 @@ char *trim(char *str);
 int main() {
   char* command;
   command = new char[120];
-  cout << "cache simulator by ycx" << endl;
-  cout << "version V1.0" << endl;
-  cout << "you can input 'help' for usage" << endl;
+  cout << "You can input 'help' for usage" << endl;
   while(1) {
     cout << ">>>";
     cin.getline(command, 100);
     command = trim(command);
     if(!strcmp(command, FILE_ARG)) {
-      cout << "please input the file name or trace name" << endl;
+      cout << "Please input the file name or trace name" << endl;
       scanf("%s", FILENAME);
       getchar();
       file = fopen(FILENAME, "r");
       if(file == NULL) {
-        cout << "open file error!" << endl;
+        cout << "Open file error!" << endl;
       } else {
-        cout << "open file successfully!" << endl;
+        cout << "Open file successfully!" << endl;
       }
     } 
     else if(!strcmp(command, SET_ARG)) {

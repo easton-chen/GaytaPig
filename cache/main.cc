@@ -16,6 +16,7 @@ Cache* caches = NULL;
 Memory m;
 bool set_flag = false;
 char content[64];
+unsigned long long request_num = 0; 
 
 void usage();
 char *trim(char *str);
@@ -94,7 +95,7 @@ int main() {
         uint64_t addr;
         char read;
         int hit, time;
-        int request_num = 0;
+        //int request_num = 0; //change request_num to a global var
         while(fscanf(file,"%c",&read) != -1) {
           fscanf(file, "%llu", &addr);
           printf("addr:%llx\t%c\n",addr,read);
@@ -102,7 +103,7 @@ int main() {
             caches[0].HandleRequest(addr,1,1,content,hit,time);
           else if(read == 'w')
             caches[0].HandleRequest(addr,1,1,content,hit,time);
-          printf("Request %d access time: %dns\n", request_num++, time);
+          printf("Request %llu access time: %dns\n", request_num++, time);
         }
         cout << "run over! here is the result:\n" << endl;
         for(int i = 0; i < cache_num; i++) {

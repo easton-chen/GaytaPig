@@ -24,7 +24,7 @@ void Cache::HandleRequest(uint64_t addr, int bytes, int read,
           else if(cc.write_through == 1) { //write through
             int lower_hit, lower_time;
             lower_->HandleRequest(addr, bytes, read, content,
-                          lower_hit, lower_time);
+                          lower_hit, lower_time); 
             time += latency_.bus_latency + lower_time;
           }
       }
@@ -81,9 +81,12 @@ int Cache::ReplaceDecision(uint64_t addr) {
   uint64_t tag = addr >> (s + b);
   for(int i = 0; i < cc.associativity; i++)
   {
-    //valid and tag is equal
-    if(sets[set_index].line[i].valid && sets[set_index].line[i].tag == tag)
+    //valid and tag is equal -> hit
+    if(sets[set_index].line[i].valid && sets[set_index].line[i].tag == tag){
+      //update timestamp
+      sets[set_index].line[i].timestamp = request_num;
       return 0;
+    }
   }
   //miss
   return 1;
@@ -99,7 +102,7 @@ void Cache::ReplaceAlgorithm(uint64_t addr, int read, int &time) {
 
   //consider both case 1 and case 2 as replace
   stats_.replace_num++;
-  int t,s,b;
+  int t=0,s=0,b=0;
   int block_size = cc.block_size;
   int set_num = cc.set_num;
   while(block_size != 1){
@@ -110,14 +113,15 @@ void Cache::ReplaceAlgorithm(uint64_t addr, int read, int &time) {
     set_num /= 2;
     s++;
   }
-  t = sizeof(uint64_t) - s - b;
+  t = 8*sizeof(uint64_t) - s - b;
 
   unsigned set_index = (addr << t) >> (t + b);
   uint64_t tag = addr >> (s + b);
-  int replace_index = -1;
-  if(sets[set_index].LRU_queue.size() == sets[set_index].line_num) {
+  int replace_index = sets[set_index].if_full();
+
+  if(replace_index == -1) {
     //case 2:conflict miss
-    replace_index = sets[set_index].LRU_queue.front();
+    replace_index = sets[set_index].find_LRU();
     //write back and modified
     if(cc.write_through == 0 && sets[set_index].line[replace_index].dirty) {
       uint64_t old_addr = (set_index << b) 
@@ -129,18 +133,22 @@ void Cache::ReplaceAlgorithm(uint64_t addr, int read, int &time) {
       time += lower_time;
     }
 
-    sets[set_index].LRU_queue.pop();
-    sets[set_index].LRU_queue.push(replace_index);
+    //sets[set_index].LRU_queue.pop();
+    //sets[set_index].LRU_queue.push(replace_index);
     sets[set_index].line[replace_index].valid = true;
     sets[set_index].line[replace_index].dirty = false;
     sets[set_index].line[replace_index].tag = tag;
-  } else {
+  } 
+  else {
     //case 1:not found
+    /*
     int i = 0;
     while(sets[set_index].line[i].valid)
       i++;
     replace_index = i;
-    sets[set_index].LRU_queue.push(replace_index);
+    */
+    //sets[set_index].LRU_queue.push(replace_index);
+    sets[set_index].line[replace_index].timestamp = request_num;
     sets[set_index].line[replace_index].valid = true;
     sets[set_index].line[replace_index].dirty = false;
     sets[set_index].line[replace_index].tag = tag;

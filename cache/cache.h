@@ -6,6 +6,8 @@
 #include "storage.h"
 #include "def.h"
 
+extern unsigned long long request_num;
+
 typedef struct CacheConfig_ {
   int size;
   int associativity;

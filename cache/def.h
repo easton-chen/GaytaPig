@@ -18,6 +18,7 @@ public:
 	uint64_t tag;
 	int block_size;
 	char* block;
+	unsigned long long timestamp;
 
 	cache_line() {
 		valid = false;
@@ -34,6 +35,7 @@ public:
 		block_size = bsize;
 		block = new char[bsize];
 		memset(block, 0, bsize);
+		timestamp = 0;
 	}
 };
 
@@ -42,7 +44,7 @@ class cache_set {
 public:
 	int line_num;
 	cache_line *line;
-	queue<int> LRU_queue; 	//the tail of the queue should be replaced
+	//queue<int> LRU_queue; 	//the tail of the queue should be replaced
 							//only happen when queue's size = line num
 
 	cache_set() {
@@ -57,7 +59,28 @@ public:
 		{
 			line[i].init(bsize);
 		}
-		while(!LRU_queue.empty()) LRU_queue.pop();
+		//while(!LRU_queue.empty()) LRU_queue.pop();
+	}
+	int if_full(){
+		for(int i = 0; i < line_num; i++)
+		{
+			if(line[i].valid == 0)
+				return i;
+		}
+		return -1;
+	}
+	int find_LRU(){
+		int index=0;
+		unsigned long long use_time=0xffffffffffffffff;
+		for(int i=0;i < line_num; i++)
+		{
+			if(line[i].timestamp < use_time)
+			{
+				index = i;
+				use_time = line[i].timestamp;
+			}
+		}
+		return index;
 	}
 };
 

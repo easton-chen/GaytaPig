@@ -107,7 +107,7 @@ int main() {
         }
         cout << "run over! here is the result:\n" << endl;
         for(int i = 0; i < cache_num; i++) {
-          printf("-------------L%d----------------",i+1);
+          printf("-------------L%d----------------\n",i+1);
           caches[i].print_result();
         }
       }

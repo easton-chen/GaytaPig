@@ -53,12 +53,12 @@ class Storage {
                              char *content, int &hit, int &time) = 0;
   void print_result() {
     printf("access_counter:\t%d\n",stats_.access_counter);
-    printf("miss_num:\t\t%d\n",stats_.miss_num);
+    printf("miss_num:\t%d\n",stats_.miss_num);
     printf("access_time:\t%d\n",stats_.access_time);
     printf("replace_num:\t%d\n",stats_.replace_num);
-    printf("fetch_num:\t\t%d\n",stats_.fetch_num);
+    printf("fetch_num:\t%d\n",stats_.fetch_num);
     printf("prefetch_num:\t%d\n",stats_.prefetch_num);
-    printf("miss rate:\t\t%lf\n",(double)stats_.miss_num/(double)stats_.access_counter);
+    printf("miss rate:\t%lf\n",(double)stats_.miss_num/(double)stats_.access_counter);
   }
  protected:
   StorageStats stats_;

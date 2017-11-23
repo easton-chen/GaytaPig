@@ -12,14 +12,16 @@ void Cache::HandleRequest(uint64_t addr, int bytes, int read,
     if (ReplaceDecision(addr)) {
       // Choose victim
       ReplaceAlgorithm(addr, read, time);
-    } else { //hit
+    } 
+    else { //hit
       if (read == 0) {
           CacheConfig cc;
           GetConfig(cc);
           if(cc.write_through == 0) { //write back
             //hit and set the dirty bit
             set_dirty(addr);
-          } else if(cc.write_through == 1) { //write through
+          } 
+          else if(cc.write_through == 1) { //write through
             int lower_hit, lower_time;
             lower_->HandleRequest(addr, bytes, read, content,
                           lower_hit, lower_time);
@@ -37,7 +39,8 @@ void Cache::HandleRequest(uint64_t addr, int bytes, int read,
   // Prefetch?
   if (PrefetchDecision()) {
     PrefetchAlgorithm();
-  } else {
+  } 
+  else {
     stats_.miss_num++;
     stats_.fetch_num++;
     // Fetch from lower layer
@@ -61,7 +64,7 @@ void Cache::PartitionAlgorithm() {
 int Cache::ReplaceDecision(uint64_t addr) {
   CacheConfig cc;
   GetConfig(cc);
-  int t,s,b;
+  int t=0,s=0,b=0;
   int block_size = cc.block_size;
   int set_num = cc.set_num;
   while(block_size != 1){
@@ -72,7 +75,7 @@ int Cache::ReplaceDecision(uint64_t addr) {
     set_num /= 2;
     s++;
   }
-  t = sizeof(uint64_t) - s - b;
+  t = 8*sizeof(uint64_t) - s - b;
 
   unsigned set_index = (addr << t) >> (t + b);
   uint64_t tag = addr >> (s + b);

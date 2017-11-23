@@ -34,34 +34,34 @@ int main() {
   dup2(outfd, STDOUT_FILENO);
   char* command;
   command = new char[120];
-  cout << "You can input 'help' for usage" << endl;
+  //cout << "You can input 'help' for usage" << endl;
   while(1) {
-    cout << ">>>";
+    //cout << ">>>";
     cin.getline(command, 100);
     command = trim(command);
     if(!strcmp(command, FILE_ARG)) {
-      cout << "Please input the file name or trace name" << endl;
+      //cout << "Please input the file name or trace name" << endl;
       scanf("%s", FILENAME);
       getchar();
       file = fopen(FILENAME, "r");
       if(file == NULL) {
-        cout << "Open file error!" << endl;
+        //cout << "Open file error!" << endl;
       } else {
-        cout << "Open file successfully!" << endl;
+        //cout << "Open file successfully!" << endl;
       }
     } 
     else if(!strcmp(command, SET_ARG)) {
       StorageLatency msl;
-      cout << "----------memory set-----------" << endl;
-      cout << "please input the memory's storage latency" << endl;
-      cout << "bus latency:0" << endl;
-      cout << "hit latency:";
+      //cout << "----------memory set-----------" << endl;
+      //cout << "please input the memory's storage latency" << endl;
+      //cout << "bus latency:0" << endl;
+      //cout << "hit latency:";
       scanf("%d",&msl.hit_latency);
       msl.bus_latency = 0;
       m.SetLatency(msl);
 
-      cout << "----------cache set------------" << endl;
-      cout << "please input the num of caches you want to set:";
+      //cout << "----------cache set------------" << endl;
+      //cout << "please input the num of caches you want to set:";
       scanf("%d",&cache_num);
       caches = new Cache[cache_num];
       for(int i = cache_num - 1; i >= 0; i--) {
@@ -70,24 +70,24 @@ int main() {
         else caches[i].SetLower(&caches[i+1]);
         //set storage latency
         StorageLatency sl;
-        cout << "please input the L" << (i+1) << " cache's storage latency:" << endl;
-        cout << "bus latency:0" << endl;
-        cout << "hit latency:";
+        //cout << "please input the L" << (i+1) << " cache's storage latency:" << endl;
+        //cout << "bus latency:0" << endl;
+        //cout << "hit latency:";
         scanf("%d",&(sl.hit_latency));
         sl.bus_latency = 0;
         caches[i].SetLatency(sl);
         //set cache config
         CacheConfig cc;
-        cout << "please input the L" << (i+1) << " cache's configuration:" << endl;
-        cout << "cache size:";
+        //cout << "please input the L" << (i+1) << " cache's configuration:" << endl;
+        //cout << "cache size:";
         scanf("%d",&cc.size);
-        cout << "associativity:";
+        //cout << "associativity:";
         scanf("%d",&cc.associativity);
-        cout << "set num:";
+        //cout << "set num:";
         scanf("%d",&cc.set_num);
-        cout << "write through(0|1 for back|through):";
+        //cout << "write through(0|1 for back|through):";
         scanf("%d",&cc.write_through);
-        cout << "write allocate(0|1 for no-alc|alc):";
+        //cout << "write allocate(0|1 for no-alc|alc):";
         scanf("%d",&cc.write_allocate);
         cc.block_size = cc.size/(cc.associativity*cc.set_num);
         caches[i].SetConfig(cc);
@@ -98,8 +98,8 @@ int main() {
     }
     else if(!strcmp(command, RUN_ARG)) {
       if(file == NULL || set_flag == false) {
-        cout << "not ready to run" << endl;
-        cout << "make sure you have open the file and set the caches" << endl;
+        //cout << "not ready to run" << endl;
+        //cout << "make sure you have open the file and set the caches" << endl;
       }
       else {
         uint64_t addr;
@@ -110,19 +110,26 @@ int main() {
 
         while(fscanf(file,"%c",&read) != -1) {
           fscanf(file, "%llu\n", &addr);
-          printf("addr:%llx\t%c\n",addr,read);
+          //printf("addr:%llx\t%c\n",addr,read);
           if(read == 'r')
             caches[0].HandleRequest(addr,1,1,content,hit,time);
           else if(read == 'w')
             caches[0].HandleRequest(addr,1,1,content,hit,time);
-          printf("Request %llu access time: %dns\n", request_num++, time);
+          //printf("Request %llu access time: %dns\n", request_num++, time);
 
         }
-        cout << "run over! here is the result:\n" << endl;
-        for(int i = 0; i < cache_num; i++) {
-          printf("-------------L%d----------------\n",i+1);
-          caches[i].print_result();
-        }
+        //cout << "run over! here is the result:\n" << endl;
+        ////printf("case-------------\n\n");
+        CacheConfig cc;
+        caches[0].GetConfig(cc);
+        StorageStats stats;
+        caches[0].GetStats(stats);
+        double miss_rate=(double)stats.miss_num/(double)stats.access_counter;
+        printf("%d %d %d %d %d %d %lf\n",cc.size,cc.set_num,cc.associativity,cc.block_size,cc.write_through,cc.write_allocate,miss_rate);
+        /*for(int i = 0; i < cache_num; i++) {
+          //printf("-------------L%d----------------\n",i+1);
+          caches[i].//print_result();
+        }*/
       }
     }
     else if(!strcmp(command, QUIT_ARG)) {
@@ -132,7 +139,7 @@ int main() {
       usage();
     }
     else {
-      cout << "illegal command!" << endl;
+      //cout << "illegal command!" << endl;
       usage();
     }
   }
@@ -160,14 +167,14 @@ int main() {
   int hit, time;
   char content[64];
   l1.HandleRequest(0, 0, 1, content, hit, time);
-  printf("Request access time: %dns\n", time);
+  //printf("Request access time: %dns\n", time);
   l1.HandleRequest(1024, 0, 1, content, hit, time);
-  printf("Request access time: %dns\n", time);
+  //printf("Request access time: %dns\n", time);
 
   l1.GetStats(s);
-  printf("Total L1 access time: %dns\n", s.access_time);
+  //printf("Total L1 access time: %dns\n", s.access_time);
   m.GetStats(s);
-  printf("Total Memory access time: %dns\n", s.access_time);
+  //printf("Total Memory access time: %dns\n", s.access_time);
   return 0;*/
 
 void usage() {

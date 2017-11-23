@@ -1,6 +1,11 @@
 #include "stdio.h"
 #include "cache.h"
 #include "memory.h"
+#include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <string.h>
 using namespace std;
 
 const char* FILE_ARG = "file";
@@ -22,6 +27,11 @@ void usage();
 char *trim(char *str);
 
 int main() {
+  int infd,outfd;
+  infd = open("input.txt", O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+  outfd = open("output.txt", O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+  dup2(infd, STDIN_FILENO);
+  dup2(outfd, STDOUT_FILENO);
   char* command;
   command = new char[120];
   cout << "You can input 'help' for usage" << endl;
@@ -96,14 +106,17 @@ int main() {
         char read;
         int hit, time;
         //int request_num = 0; //change request_num to a global var
+        request_num = 0;
+
         while(fscanf(file,"%c",&read) != -1) {
-          fscanf(file, "%llu", &addr);
+          fscanf(file, "%llu\n", &addr);
           printf("addr:%llx\t%c\n",addr,read);
           if(read == 'r')
             caches[0].HandleRequest(addr,1,1,content,hit,time);
           else if(read == 'w')
             caches[0].HandleRequest(addr,1,1,content,hit,time);
           printf("Request %llu access time: %dns\n", request_num++, time);
+
         }
         cout << "run over! here is the result:\n" << endl;
         for(int i = 0; i < cache_num; i++) {

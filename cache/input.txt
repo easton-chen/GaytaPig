@@ -1,0 +1,13 @@
+set
+100
+1
+3
+32768
+8
+8
+1
+1
+file
+1.trace
+run
+quit

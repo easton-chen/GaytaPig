@@ -130,6 +130,7 @@ int main() {
           //printf("-------------L%d----------------\n",i+1);
           caches[i].//print_result();
         }*/
+        delete [] caches;
       }
     }
     else if(!strcmp(command, QUIT_ARG)) {

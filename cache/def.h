@@ -28,6 +28,9 @@ public:
 		block = NULL;
 	}
 
+	~cache_line() {
+		delete [] block;
+	}
 	void init(int bsize) {
 		valid = false;
 		dirty = false;
@@ -50,6 +53,10 @@ public:
 	cache_set() {
 		line_num = 0;
 		line = NULL;
+	}
+
+	~cache_set() {
+		delete [] line;
 	}
 
 	void init(int associativity, int bsize) {

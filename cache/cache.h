@@ -22,7 +22,9 @@ class Cache: public Storage {
   cache_set *sets;
 
   Cache() {}
-  ~Cache() {}
+  ~Cache() {
+    delete [] sets;
+  }
 
   // Sets & Gets
   void SetConfig(CacheConfig cc);

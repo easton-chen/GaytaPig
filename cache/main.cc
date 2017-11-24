@@ -124,8 +124,9 @@ int main() {
         caches[0].GetConfig(cc);
         StorageStats stats;
         caches[0].GetStats(stats);
+        int access_time = stats.access_time;
         double miss_rate=(double)stats.miss_num/(double)stats.access_counter;
-        printf("%d %d %d %d %d %d %lf\n",cc.size,cc.set_num,cc.associativity,cc.block_size,cc.write_through,cc.write_allocate,miss_rate);
+        printf("%d %d %d %d %d %d %d %lf\n",cc.size,cc.set_num,cc.associativity,cc.block_size,cc.write_through,cc.write_allocate,access_time,miss_rate);
         /*for(int i = 0; i < cache_num; i++) {
           //printf("-------------L%d----------------\n",i+1);
           caches[i].//print_result();

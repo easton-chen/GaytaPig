@@ -11,9 +11,11 @@ void Cache::HandleRequest(uint64_t addr, int bytes, int read,
     // Miss?
     if (ReplaceDecision(addr)) {
       // Choose victim
+      //printf("miss\n");
       ReplaceAlgorithm(addr, read, time);
     } 
     else { //hit
+      //printf("hit\n");
       if (read == 0) {
           CacheConfig cc;
           GetConfig(cc);
@@ -98,7 +100,9 @@ void Cache::ReplaceAlgorithm(uint64_t addr, int read, int &time) {
   GetConfig(cc);
   //only if write and wirte non-allocate is there no replacement
   if(read == 0 && cc.write_allocate == 0)
+  {
     return;
+  }
 
   //consider both case 1 and case 2 as replace
   stats_.replace_num++;
@@ -136,7 +140,10 @@ void Cache::ReplaceAlgorithm(uint64_t addr, int read, int &time) {
     //sets[set_index].LRU_queue.pop();
     //sets[set_index].LRU_queue.push(replace_index);
     sets[set_index].line[replace_index].valid = true;
-    sets[set_index].line[replace_index].dirty = false;
+    if(read == 0)
+      sets[set_index].line[replace_index].dirty = true;
+    else
+      sets[set_index].line[replace_index].dirty = false;
     sets[set_index].line[replace_index].tag = tag;
   } 
   else {
@@ -150,7 +157,10 @@ void Cache::ReplaceAlgorithm(uint64_t addr, int read, int &time) {
     //sets[set_index].LRU_queue.push(replace_index);
     sets[set_index].line[replace_index].timestamp = request_num;
     sets[set_index].line[replace_index].valid = true;
-    sets[set_index].line[replace_index].dirty = false;
+    if(read == 0)
+      sets[set_index].line[replace_index].dirty = true;
+    else
+      sets[set_index].line[replace_index].dirty = false;
     sets[set_index].line[replace_index].tag = tag;
   }
 }
@@ -178,7 +188,7 @@ void Cache::GetConfig(CacheConfig &cc) {
 void Cache::set_dirty(uint64_t addr) {
   CacheConfig cc;
   GetConfig(cc);
-  int t,s,b;
+  int t=0,s=0,b=0;
   int block_size = cc.block_size;
   int set_num = cc.set_num;
   while(block_size != 1){

@@ -29,7 +29,7 @@ char *trim(char *str);
 int main() {
   int infd,outfd;
   infd = open("input.txt", O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
-  outfd = open("output.txt", O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+  outfd = open("output2.txt", O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
   dup2(infd, STDIN_FILENO);
   dup2(outfd, STDOUT_FILENO);
   char* command;
@@ -105,7 +105,7 @@ int main() {
         uint64_t addr;
         char read;
         int hit, time;
-        //int request_num = 0; //change request_num to a global var
+        int request_num = 0; //change request_num to a global var
         request_num = 0;
 
         while(fscanf(file,"%c",&read) != -1) {
@@ -114,7 +114,7 @@ int main() {
           if(read == 'r')
             caches[0].HandleRequest(addr,1,1,content,hit,time);
           else if(read == 'w')
-            caches[0].HandleRequest(addr,1,1,content,hit,time);
+            caches[0].HandleRequest(addr,1,0,content,hit,time);
           //printf("Request %llu access time: %dns\n", request_num++, time);
 
         }

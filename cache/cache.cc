@@ -51,7 +51,7 @@ void Cache::HandleRequest(uint64_t addr, int bytes, int read,
                           lower_hit, lower_time);
     hit = 0;
     time += latency_.bus_latency + lower_time + latency_.hit_latency;
-    stats_.access_time += latency_.bus_latency;
+    stats_.access_time += time;
   }
 }
 

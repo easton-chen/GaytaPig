@@ -29,7 +29,7 @@ char *trim(char *str);
 int main() {
   int infd,outfd;
   infd = open("input2.txt", O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
-  outfd = open("output2.txt", O_RDWR|O_CREAT, S_IRUSR|S_IWUSR);
+  outfd = open("output2.txt", O_RDWR|O_CREAT|O_TRUNC, S_IRUSR|S_IWUSR);
   dup2(infd, STDIN_FILENO);
   dup2(outfd, STDOUT_FILENO);
   char* command;

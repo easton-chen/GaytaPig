@@ -105,7 +105,7 @@ int main() {
         uint64_t addr;
         char read;
         int hit, time;
-        int request_num = 0; //change request_num to a global var
+        //int request_num = 0; //change request_num to a global var
         request_num = 0;
 
         while(fscanf(file,"%c",&read) != -1) {
@@ -116,6 +116,7 @@ int main() {
           else if(read == 'w')
             caches[0].HandleRequest(addr,1,0,content,hit,time);
           //printf("Request %llu access time: %dns\n", request_num++, time);
+          request_num++;
 
         }
         //cout << "run over! here is the result:\n" << endl;

@@ -50,7 +50,7 @@ class Storage {
   // [out] hit: 0|1 for miss|hit
   // [out] time: total access time
   virtual void HandleRequest(uint64_t addr, int bytes, int read,
-                             char *content, int &hit, int &time) = 0;
+                             char *content, int &hit, int &time, bool pre_flag) = 0;
   void print_result() {
     printf("access_counter:\t%d\n",stats_.access_counter);
     printf("miss_num:\t%d\n",stats_.miss_num);

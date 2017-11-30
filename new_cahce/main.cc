@@ -66,10 +66,10 @@ int main() {
         //set storage latency
         StorageLatency sl;
         cout << "please input the L" << (i+1) << " cache's storage latency:" << endl;
-        cout << "bus latency:0" << endl;
+        cout << "bus latency:" << endl;
+        scanf("%d",&(sl.bus_latency));
         cout << "hit latency:";
         scanf("%d",&(sl.hit_latency));
-        sl.bus_latency = 0;
         caches[i].SetLatency(sl);
         //set cache config
         CacheConfig cc;
@@ -104,12 +104,12 @@ int main() {
         request_num = 0;
 
         while(fscanf(file,"%c",&read) != -1) {
-          fscanf(file, "%llx\n", &addr);
+          fscanf(file, "%llu\n", &addr);
           //printf("addr:%llx\t%c\n",addr,read);
           if(read == 'r')
-            caches[0].HandleRequest(addr,1,1,content,hit,time);
+            caches[0].HandleRequest(addr,1,1,content,hit,time,0);
           else if(read == 'w')
-            caches[0].HandleRequest(addr,1,0,content,hit,time);
+            caches[0].HandleRequest(addr,1,0,content,hit,time,0);
           //printf("Request %llu access time: %dns\n", request_num++, time);
           request_num++;
 
@@ -124,9 +124,11 @@ int main() {
         double miss_rate=(double)stats.miss_num/(double)stats.access_counter;
         //printf("%d %d %d %d %d %d %d %lf\n",cc.size,cc.set_num,cc.associativity,cc.block_size,cc.write_through,cc.write_allocate,access_time,miss_rate);
         for(int i = 0; i < cache_num; i++) {
-          //printf("-------------L%d----------------\n",i+1);
+          printf("-------------L%d----------------\n",i+1);
           caches[i].print_result();
         }
+        printf("-------------Memory----------------\n");
+        m.print_result();
         delete [] caches;
       }
     }

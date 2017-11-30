@@ -28,21 +28,21 @@ class Cache: public Storage {
   }
 
   // Sets & Gets
-  void SetConfig(CacheConfig cc);
+  void SetConfig(CacheConfig cc); 
   void GetConfig(CacheConfig &cc);
   void SetLower(Storage *ll) { lower_ = ll; }
   // Main access process
   void HandleRequest(uint64_t addr, int bytes, int read,
-                     char *content, int &hit, int &time);
+                     char *content, int &hit, int &time, bool pre_flag);
 
  private:
   // Bypassing
-  int BypassDecision();
+  int BypassDecision(uint64_t addr);
   // Partitioning
   void PartitionAlgorithm();
   // Replacement
-  int ReplaceDecision(uint64_t addr);
-  void ReplaceAlgorithm(uint64_t addr, int read, int &time);
+  int ReplaceDecision(uint64_t addr, bool pre_flag);
+  void ReplaceAlgorithm(uint64_t addr, int read, int &time, bool pre_flag);
   // Prefetching
   int PrefetchDecision();
   void PrefetchAlgorithm(uint64_t addr);

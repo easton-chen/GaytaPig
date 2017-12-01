@@ -160,11 +160,20 @@ public:
 		if(warm_up_flag > 0) {
 			LIRS_block lb;
 			lb.tag = tag;
-			lb.resident = if_full();
-			lb.LIR = true;
-			res = lb.resident;
-			warm_up_flag--;
-			S_queue.push_front(lb);
+			deque<class LIRS_block>::iterator di;
+			di = find(S_queue.begin(), S_queue.end(),lb);
+			if(di != S_queue.end()) {
+				lb = *di;
+				S_queue.erase(di);
+				S_queue.push_front(lb);
+			}
+			else {
+				lb.resident = if_full();
+				lb.LIR = true;
+				res = lb.resident;
+				warm_up_flag--;
+				S_queue.push_front(lb);
+			}
 		}
 		else {
 			LIRS_block lb;
@@ -209,6 +218,7 @@ public:
 					else {
 						//not in the cache, need to replace
 						//remove the front  from Q queue.
+						S_queue.erase(di);
 						LIRS_block replaced_block;
 						replaced_block = Q_queue.back();
 						//if replaced block is in the S queue, set it as non-resident
@@ -220,11 +230,11 @@ public:
 							if(line[i].tag == replaced_block.tag)
 								res = i;
 						}
-
 						if(res == -1) cout << "error1!!!" << endl;
 						Q_queue.pop_back();
 						//add the S queue's end block to the Q queue. 
 						LIRS_block removed_block = S_queue.back();
+
 						S_queue.pop_back();
 						removed_block.LIR = false;
 						Q_queue.push_front(removed_block);
@@ -234,7 +244,6 @@ public:
 						//set lb as LIR and move it to the front of S queue
 						lb.LIR = true;
 						lb.resident = res;
-						S_queue.erase(di);
 						S_queue.push_front(lb);
 					}
 				}
@@ -290,9 +299,9 @@ public:
 				}
 			}
 		}
-		printf("res:%d\n",res);
-		print_LIRS();
-		printf("\n");
+		//printf("res:%d\n",res);
+		//print_LIRS();
+		//printf("\n");
 		return res;
 	}
 

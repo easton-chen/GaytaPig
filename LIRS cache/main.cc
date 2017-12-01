@@ -104,7 +104,7 @@ int main() {
         request_num = 0;
 
         while(fscanf(file,"%c",&read) != -1) {
-          fscanf(file, "%llx\n", &addr);
+          fscanf(file, "%llu\n", &addr);
           //printf("addr:%llx\t%c\n",addr,read);
           if(read == 'r')
             caches[0].HandleRequest(addr,1,1,content,hit,time,0);
@@ -114,7 +114,7 @@ int main() {
           request_num++;
 
         }
-        cout << "run over! here is the result:\n" << endl;
+        cout << "run over! here is the result:" << endl;
         ////printf("case-------------\n\n");
         CacheConfig cc;
         caches[0].GetConfig(cc);
@@ -129,7 +129,7 @@ int main() {
         }
         printf("-------------Memory----------------\n");
         m.print_result();
-        //delete [] caches;
+        delete [] caches;
       }
     }
     else if(!strcmp(command, QUIT_ARG)) {

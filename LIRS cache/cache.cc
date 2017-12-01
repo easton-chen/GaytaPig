@@ -53,7 +53,7 @@ void Cache::HandleRequest(uint64_t addr, int bytes, int read,
 
       unsigned set_index = (addr << t) >> (t + b);
       uint64_t tag = addr >> (s + b);
-      printf("case1:\trequest_num:%llu\tset:%d\ttag:%llx\n",request_num,set_index,tag);
+      //printf("request_num:%llu\tL%d\tset:%d\ttag:%llx\n",request_num,cc.level,set_index,tag);
       sets[set_index].update_LIRS(tag);
     }
     
@@ -180,7 +180,7 @@ void Cache::ReplaceAlgorithm(uint64_t addr, int read, int &time, bool pre_flag) 
   
   int replace_index;
   if(cc.level == 1) {
-    printf("case2:\trequest_num:%llu\tset:%d\ttag:%llx\n",request_num,set_index,tag);
+    //printf("request_num:%llu\tL%d\tset:%d\ttag:%llx\n",request_num,cc.level,set_index,tag);
     replace_index = sets[set_index].update_LIRS(tag);
   }
   else if (cc.level == 2) replace_index = sets[set_index].find_LRU();
@@ -380,7 +380,7 @@ void Cache::insert(uint64_t addr)
 
   int replace_index;
   if(cc.level == 1) {
-    printf("case3:\trequest_num:%llu\tset:%d\ttag:%llx\n",request_num,set_index,tag);
+    //printf("request_num:%llu\tL%d\tset:%d\ttag:%llx\n",request_num,cc.level,set_index,tag);
     replace_index = sets[set_index].update_LIRS(tag);
   }
   else if (cc.level == 2) replace_index = sets[set_index].find_LRU();

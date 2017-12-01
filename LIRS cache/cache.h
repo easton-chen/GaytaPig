@@ -25,6 +25,7 @@ class Cache: public Storage {
 
   Cache() {}
   ~Cache() {
+    //printf("delete sets\n");
     delete [] sets;
   }
 

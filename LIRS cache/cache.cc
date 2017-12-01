@@ -181,7 +181,10 @@ void Cache::ReplaceAlgorithm(uint64_t addr, int read, int &time, bool pre_flag) 
   int replace_index;
   if(cc.algorithm_sort == 0) replace_index = sets[set_index].find_LRU();
   else if(cc.algorithm_sort == 1) replace_index = sets[set_index].find_LFU();
-  else if(cc.algorithm_sort == 2) replace_index = sets[set_index].update_LIRS(tag);
+  else if(cc.algorithm_sort == 2) {
+  	//printf("request_num:%llu\tL%d\tset:%d\ttag:%llx\n",request_num,cc.level,set_index,tag);
+  	replace_index = sets[set_index].update_LIRS(tag);
+  }
   /*if(cc.level == 1) {
     //printf("request_num:%llu\tL%d\tset:%d\ttag:%llx\n",request_num,cc.level,set_index,tag);
     replace_index = sets[set_index].update_LIRS(tag);
@@ -203,13 +206,14 @@ void Cache::ReplaceAlgorithm(uint64_t addr, int read, int &time, bool pre_flag) 
     stats_.replace_num++;
     uint64_t old_addr = (set_index << b) 
                         + (sets[set_index].line[replace_index].tag << (s + b));
+    bool old_dirty = sets[set_index].line[replace_index].dirty;
     sets[set_index].line[replace_index].valid = true;
     if(read == 0)
       sets[set_index].line[replace_index].dirty = true;
     else
       sets[set_index].line[replace_index].dirty = false;
     sets[set_index].line[replace_index].tag = tag;
-    if(cc.write_through == 0 && sets[set_index].line[replace_index].dirty) {
+    if(cc.write_through == 0 && old_dirty) {
       int lower_hit, lower_time;
       char content[64];
       lower_->HandleRequest(old_addr, 1, 0, content,
@@ -384,9 +388,12 @@ void Cache::insert(uint64_t addr)
   int replace_index;
   if(cc.algorithm_sort == 0) replace_index = sets[set_index].find_LRU();
   else if(cc.algorithm_sort == 1) replace_index = sets[set_index].find_LFU();
-  else if(cc.algorithm_sort == 2) replace_index = sets[set_index].update_LIRS(tag);
+  else if(cc.algorithm_sort == 2) {
+  	//printf("request_num:%llu\tL%d\tset:%d\ttag:%llx\n",request_num,cc.level,set_index,tag);
+  	replace_index = sets[set_index].update_LIRS(tag);
+  }
   /*if(cc.level == 1) {
-    //printf("request_num:%llu\tL%d\tset:%d\ttag:%llx\n",request_num,cc.level,set_index,tag);
+    printf("request_num:%llu\tL%d\tset:%d\ttag:%llx\n",request_num,cc.level,set_index,tag);
     replace_index = sets[set_index].update_LIRS(tag);
   }
   else if (cc.level == 2) replace_index = sets[set_index].find_LRU();*/
@@ -403,10 +410,11 @@ void Cache::insert(uint64_t addr)
     stats_.replace_num++;
     uint64_t old_addr = (set_index << b) 
                         + (sets[set_index].line[replace_index].tag << (s + b));
+    bool old_dirty = sets[set_index].line[replace_index].dirty;
     sets[set_index].line[replace_index].valid = true;
     sets[set_index].line[replace_index].dirty = false;
     sets[set_index].line[replace_index].tag = tag;
-    if(cc.write_through == 0 && sets[set_index].line[replace_index].dirty) {
+    if(cc.write_through == 0 && old_dirty) {
       int lower_hit, lower_time;
       char content[64];
       lower_->HandleRequest(old_addr, 1, 0, content,

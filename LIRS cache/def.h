@@ -36,7 +36,7 @@ public:
 	bool dirty;
 	uint64_t tag;
 	int block_size;
-	char* block;
+	//char* block;
 	unsigned long long timestamp;
 
 	cache_line() {
@@ -44,19 +44,20 @@ public:
 		dirty = false;
 		tag = 0;
 		block_size = 0;
-		block = NULL;
+		//block = NULL;
 	}
 
 	~cache_line() {
-		delete [] block;
+		//printf("delete blocks\n");
+		//delete [] block;
 	}
 	void init(int bsize) {
 		valid = false;
 		dirty = false;
 		tag = 0;
 		block_size = bsize;
-		block = new char[bsize];
-		memset(block, 0, bsize);
+		//block = new char[bsize];
+		//memset(block, 0, bsize);
 		timestamp = 0;
 	}
 };
@@ -84,6 +85,7 @@ public:
 	}
 
 	~cache_set() {
+		//printf("delete lines\n");
 		delete [] line;
 	}
 
@@ -111,6 +113,8 @@ public:
 			line[i].init(bsize);
 		}
 		tag_frequecy.clear();
+		Q_queue.clear();
+		S_queue.clear();
 		//while(!LRU_queue.empty()) LRU_queue.pop();
 	}
 	int if_full(){
@@ -261,11 +265,21 @@ public:
 						S_queue.pop_back();*/
 
 					//add new block to the front of the S queue.
-					lb.LIR = false;
-					lb.resident = if_full();
-					S_queue.push_front(lb);
-					Q_queue.push_front(lb);
-					res = lb.resident;
+					deque<class LIRS_block>::iterator qi;
+					qi = find(Q_queue.begin(), Q_queue.end(), lb);
+					if(qi == Q_queue.end()) {
+						//not find in Q queue
+						lb.LIR = false;
+						lb.resident = if_full();
+						S_queue.push_front(lb);
+						Q_queue.push_front(lb);
+						res = lb.resident;
+					}
+					else {
+						//found,only need to push in S queue
+						lb = *qi;
+						S_queue.push_front(lb);
+					}
 				}
 				else {
 					deque<class LIRS_block>::iterator qi;

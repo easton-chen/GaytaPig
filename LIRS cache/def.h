@@ -252,18 +252,19 @@ public:
 				//not in the S queue
 				if(Q_queue.size() < HIR_num) {
 					//still have valid block
-					LIRS_block removed_block = S_queue.back();
+					/*LIRS_block removed_block = S_queue.back();
 					S_queue.pop_back();
 					removed_block.LIR = false;
 					Q_queue.push_front(removed_block);
 					//trimming
 					while(S_queue.back().LIR == false)
-						S_queue.pop_back();
+						S_queue.pop_back();*/
 
 					//add new block to the front of the S queue.
-					lb.LIR = true;
+					lb.LIR = false;
 					lb.resident = if_full();
 					S_queue.push_front(lb);
+					Q_queue.push_front(lb);
 					res = lb.resident;
 				}
 				else {

@@ -9,7 +9,7 @@ void Cache::HandleRequest(uint64_t addr, int bytes, int read,
   // Bypass?
   if (ReplaceDecision(addr, pre_flag)) {
     //Choose victim
-    //printf("miss\n");
+    //printf("%llu:%llx\tmiss\n",request_num, addr);
     if(BypassDecision(addr)) {
       //bypass
       stats_.fetch_num--;
@@ -20,7 +20,7 @@ void Cache::HandleRequest(uint64_t addr, int bytes, int read,
     }    
   } 
   else { //hit
-    //printf("%llx:hit\n",request_num);
+    //printf("%llu:%llx\thit\n", request_num, addr);
     if (read == 0) {
       CacheConfig cc;
       GetConfig(cc);
@@ -37,7 +37,7 @@ void Cache::HandleRequest(uint64_t addr, int bytes, int read,
     }
     CacheConfig cc;
     GetConfig(cc);
-    if(cc.level == 1) {
+    if(cc.algorithm_sort == 2) {
       int t=0,s=0,b=0;
       int block_size = cc.block_size;
       int set_num = cc.set_num;
@@ -179,13 +179,16 @@ void Cache::ReplaceAlgorithm(uint64_t addr, int read, int &time, bool pre_flag) 
   uint64_t tag = addr >> (s + b);
   
   int replace_index;
-  if(cc.level == 1) {
+  if(cc.algorithm_sort == 0) replace_index = sets[set_index].find_LRU();
+  else if(cc.algorithm_sort == 1) replace_index = sets[set_index].find_LFU();
+  else if(cc.algorithm_sort == 2) replace_index = sets[set_index].update_LIRS(tag);
+  /*if(cc.level == 1) {
     //printf("request_num:%llu\tL%d\tset:%d\ttag:%llx\n",request_num,cc.level,set_index,tag);
     replace_index = sets[set_index].update_LIRS(tag);
   }
-  else if (cc.level == 2) replace_index = sets[set_index].find_LRU();
+  else if (cc.level == 2) replace_index = sets[set_index].find_LRU();*/
 
-  if(sets[set_index].line[replace_index].valid) {
+  if(!sets[set_index].line[replace_index].valid) {
     //case 1:find a valid block
     sets[set_index].line[replace_index].timestamp = request_num;
     sets[set_index].line[replace_index].valid = true;
@@ -379,13 +382,16 @@ void Cache::insert(uint64_t addr)
   uint64_t tag = addr >> (s + b);
 
   int replace_index;
-  if(cc.level == 1) {
+  if(cc.algorithm_sort == 0) replace_index = sets[set_index].find_LRU();
+  else if(cc.algorithm_sort == 1) replace_index = sets[set_index].find_LFU();
+  else if(cc.algorithm_sort == 2) replace_index = sets[set_index].update_LIRS(tag);
+  /*if(cc.level == 1) {
     //printf("request_num:%llu\tL%d\tset:%d\ttag:%llx\n",request_num,cc.level,set_index,tag);
     replace_index = sets[set_index].update_LIRS(tag);
   }
-  else if (cc.level == 2) replace_index = sets[set_index].find_LRU();
+  else if (cc.level == 2) replace_index = sets[set_index].find_LRU();*/
 
-  if(sets[set_index].line[replace_index].valid) {
+  if(!sets[set_index].line[replace_index].valid) {
     //case 1:find a valid block
     sets[set_index].line[replace_index].timestamp = request_num;
     sets[set_index].line[replace_index].valid = true;

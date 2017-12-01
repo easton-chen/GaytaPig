@@ -16,6 +16,7 @@ typedef struct CacheConfig_ {
   int write_allocate; // 0|1 for no-alc|alc
   int block_size;
   int level;
+  int algorithm_sort; //0|1|2 for LRU|LFU|LIRS
 } CacheConfig;
 
 class Cache: public Storage {

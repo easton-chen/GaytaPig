@@ -9,7 +9,7 @@ void Cache::HandleRequest(uint64_t addr, int bytes, int read,
   // Bypass?
   if (ReplaceDecision(addr, pre_flag)) {
     //Choose victim
-    //printf("miss\n");
+    //printf("%llu:%llx\tmiss\n",request_num,addr);
     if(BypassDecision(addr)) {
       //bypass
       stats_.fetch_num--;
@@ -20,7 +20,7 @@ void Cache::HandleRequest(uint64_t addr, int bytes, int read,
     }    
   } 
   else { //hit
-    //printf("%llx:hit\n",request_num);
+    //printf("%llu:%llx\thit\n",request_num, addr);
     if (read == 0) {
       CacheConfig cc;
       GetConfig(cc);
@@ -161,9 +161,9 @@ void Cache::ReplaceAlgorithm(uint64_t addr, int read, int &time, bool pre_flag) 
     //case 2:conflict miss
     stats_.replace_num++;
     if (cc.level == 1)
-      replace_index = sets[set_index].find_LFU();
-    else if (cc.level == 2) 
       replace_index = sets[set_index].find_LRU();
+    else if (cc.level == 2) 
+      replace_index = sets[set_index].find_LFU();
     //write back and modified
     if(cc.write_through == 0 && sets[set_index].line[replace_index].dirty) {
       uint64_t old_addr = (set_index << b) 
@@ -328,9 +328,9 @@ void Cache::insert(uint64_t addr)
   if(replace_index == -1) {
     //case 2:conflict miss
     if (cc.level == 1)
-      replace_index = sets[set_index].find_LFU();
-    else if (cc.level == 2) 
       replace_index = sets[set_index].find_LRU();
+    else if (cc.level == 2) 
+      replace_index = sets[set_index].find_LFU();
     //write back and modified
     if(cc.write_through == 0 && sets[set_index].line[replace_index].dirty) {
       uint64_t old_addr = (set_index << b) 

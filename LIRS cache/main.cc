@@ -58,6 +58,7 @@ int main() {
       cout << "----------cache set------------" << endl;
       cout << "please input the num of caches you want to set:";
       scanf("%d",&cache_num);
+      if(caches) delete [] caches;
       caches = new Cache[cache_num];
       for(int i = cache_num - 1; i >= 0; i--) {
         //set lower
@@ -66,7 +67,7 @@ int main() {
         //set storage latency
         StorageLatency sl;
         cout << "please input the L" << (i+1) << " cache's storage latency:" << endl;
-        cout << "bus latency:" << endl;
+        cout << "bus latency:";
         scanf("%d",&(sl.bus_latency));
         cout << "hit latency:";
         scanf("%d",&(sl.hit_latency));
@@ -85,6 +86,8 @@ int main() {
         scanf("%d",&cc.write_through);
         cout << "write allocate(0|1 for no-alc|alc):";
         scanf("%d",&cc.write_allocate);
+        cout << "Algorithm(0|1|2 for LRU|LFU|LIRS):";
+        scanf("%d",&cc.algorithm_sort);
         cc.block_size = cc.size/(cc.associativity*cc.set_num);
         caches[i].SetConfig(cc);
       }
@@ -102,6 +105,7 @@ int main() {
         char read;
         int hit, time;
         request_num = 0;
+        fseek(file, 0, 0);
 
         while(fscanf(file,"%c",&read) != -1) {
           fscanf(file, "%llu\n", &addr);
@@ -127,12 +131,14 @@ int main() {
           printf("-------------L%d----------------\n",i+1);
           caches[i].print_result();
         }
-        printf("-------------Memory----------------\n");
+        printf("-----------Memory--------------\n");
         m.print_result();
-        delete [] caches;
+        printf("AMAT:%.02lf\n",(double)stats.access_time/(double)stats.access_counter);
+        //delete [] caches;
       }
     }
     else if(!strcmp(command, QUIT_ARG)) {
+      if(caches) delete [] caches;
       break;
     }
     else if(!strcmp(command, HELP_ARG)) {
